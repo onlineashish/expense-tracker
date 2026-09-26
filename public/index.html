@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Expense Tracker</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 24px 16px 48px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f4f5f7;
+    color: #1f2937;
+  }
+
+  .app { max-width: 720px; margin: 0 auto; }
+
+  h1 { font-size: 1.4rem; margin: 0 0 16px; }
+
+  form { display: flex; gap: 8px; }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    font: inherit;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+  }
+  input:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: -1px;
+    border-color: transparent;
+  }
+
+  button {
+    padding: 10px 16px;
+    font: inherit;
+    font-weight: 600;
+    color: #fff;
+    background: #4f46e5;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover { background: #4338ca; }
+
+  .summary {
+    margin: 14px 0 0;
+    font-size: .9rem;
+    color: #6b7280;
+  }
+  .summary:empty { display: none; }
+
+  .card {
+    margin-top: 16px;
+    padding: 16px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+  }
+
+  .card header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .card h2 { margin: 0; font-size: 1.05rem; }
+
+  .total { font-size: .9rem; font-weight: 600; color: #4f46e5; }
+
+  .expenses { margin: 0 0 12px; padding: 0; list-style: none; }
+
+  .expense {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f1f3;
+  }
+  .expense:last-child { border-bottom: 0; }
+
+  .expense .desc { flex: 1; word-break: break-word; }
+  .expense .amt { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .muted { padding: 4px 0; font-size: .9rem; color: #9ca3af; }
+
+  .icon {
+    padding: 2px 8px;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #9ca3af;
+    background: transparent;
+  }
+  .icon:hover { color: #dc2626; background: #fee2e2; }
+
+  .expense-form { flex-wrap: wrap; }
+  .expense-form input[name="amount"] { flex: 0 0 120px; }
+  .expense-form button { padding: 10px 14px; font-size: .9rem; }
+
+  .empty { color: #6b7280; }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>💸 Expense Tracker</h1>
+
+  <form id="person-form" autocomplete="off">
+    <input id="person-name" type="text" placeholder="Add a person by name" required />
+    <button type="submit">Add person</button>
+  </form>
+
+  <p id="summary" class="summary"></p>
+
+  <div id="people"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const CURRENCY = ''; // e.g. '$', '₹', '€'
+
+  const peopleEl  = document.getElementById('people');
+  const summaryEl = document.getElementById('summary');
+
+  let people = [];
+
+  /* ---------------- API helper ---------------- */
+
+  async function api(path, options = {}) {
+    const res = await fetch('/api' + path, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options
+    });
+
+    if (!res.ok) {
+      let message = `Request failed (${res.status})`;
+      try { message = (await res.json()).error || message; } catch {}
+      throw new Error(message);
+    }
+    return res.status === 204 ? null : res.json();
+  }
+
+  async function refresh() {
+    people = await api('/people');
+    render();
+  }
+
+  /* ---------------- Helpers ---------------- */
+
+  function formatMoney(n) {
+    return CURRENCY + n.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
+
+  function personTotal(person) {
+    return person.expenses.reduce((sum, e) => sum + e.amount, 0);
+  }
+
+  /* ---------------- Render ---------------- */
+
+  function render() {
+    if (people.length === 0) {
+      summaryEl.textContent = '';
+      peopleEl.innerHTML = '<p class="empty">No people yet — add someone above to get started.</p>';
+      return;
+    }
+
+    const grandTotal = people.reduce((sum, p) => sum + personTotal(p), 0);
+    summaryEl.textContent = `Overall total: ${formatMoney(grandTotal)}`;
+
+    peopleEl.innerHTML = people.map(person => {
+      const rows = person.expenses.length
+        ? person.expenses.map(exp => `
+            <li class="expense">
+              <span class="desc">${escapeHtml(exp.description)}</span>
+              <span class="amt">${formatMoney(exp.amount)}</span>
+              <button class="icon" type="button"
+                      data-action="delete-expense"
+                      data-expense="${exp.id}"
+                      title="Delete expense">&times;</button>
+            </li>`).join('')
+        : '<li class="muted">No expenses yet</li>';
+
+      return `
+        <section class="card">
+          <header>
+            <h2>${escapeHtml(person.name)}</h2>
+            <div>
+              <span class="total">Total: ${formatMoney(personTotal(person))}</span>
+              <button class="icon" type="button"
+                      data-action="delete-person"
+                      data-person="${person.id}"
+                      title="Delete person">&times;</button>
+            </div>
+          </header>
+
+          <ul class="expenses">${rows}</ul>
+
+          <form class="expense-form" data-person="${person.id}" autocomplete="off">
+            <input name="amount" type="number" step="0.01" min="0.01"
+                   inputmode="decimal" placeholder="Amount" required />
+            <input name="description" type="text" placeholder="Description" required />
+            <button type="submit">Add</button>
+          </form>
+        </section>`;
+    }).join('');
+  }
+
+  /* ---------------- Events ---------------- */
+
+  // Add a person
+  document.getElementById('person-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = document.getElementById('person-name');
+    const name = input.value.trim();
+    if (!name) return;
+
+    try {
+      await api('/people', { method: 'POST', body: JSON.stringify({ name }) });
+      input.value = '';
+      input.focus();
+      await refresh();
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+
+  // Add an expense (delegated)
+  peopleEl.addEventListener('submit', async (e) => {
+    const form = e.target.closest('.expense-form');
+    if (!form) return;
+    e.preventDefault();
+
+    const personId = form.dataset.person;
+    const amount = parseFloat(form.elements.amount.value);
+    const description = form.elements.description.value.trim();
+    if (!isFinite(amount) || amount <= 0 || !description) return;
+
+    try {
+      await api(`/people/${personId}/expenses`, {
+        method: 'POST',
+        body: JSON.stringify({ amount, description })
+      });
+      await refresh();
+
+      // keep focus on the same person's amount field for fast entry
+      const next = peopleEl.querySelector(`.expense-form[data-person="${personId}"]`);
+      if (next) next.elements.amount.focus();
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+
+  // Delete person / expense (delegated)
+  peopleEl.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+
+    const { action, person: personId, expense: expenseId } = btn.dataset;
+
+    try {
+      if (action === 'delete-person') {
+        const p = people.find(x => String(x.id) === personId);
+        if (!p || !confirm(`Delete "${p.name}" and all their expenses?`)) return;
+        await api(`/people/${personId}`, { method: 'DELETE' });
+      } else if (action === 'delete-expense') {
+        await api(`/expenses/${expenseId}`, { method: 'DELETE' });
+      }
+      await refresh();
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+
+  /* ---------------- Boot ---------------- */
+
+  refresh().catch(err => {
+    peopleEl.innerHTML = `<p class="empty">Could not load data: ${escapeHtml(err.message)}</p>`;
+  });
+})();
+</script>
+</body>
+</html>
