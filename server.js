@@ -18,7 +18,15 @@ try {
 
 const app = express();
 app.use(express.json());
-app.use(express.static('public'));
+
+// In production, serve the built React app.
+// In dev, Vite handles the frontend and this is a no-op.
+app.use(express.static('client/dist'));
+
+// SPA fallback: send index.html for any non-API GET request.
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(new URL('./client/dist/index.html', import.meta.url).pathname);
+});
 
 /* ---------------- People ---------------- */
 

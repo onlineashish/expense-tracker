@@ -1,0 +1,147 @@
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 1.4rem;
+  margin: 0 0 16px;
+}
+
+form {
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font: inherit;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+input:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+button {
+  padding: 10px 16px;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: #4f46e5;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.summary {
+  margin: 14px 0 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.card {
+  margin-top: 16px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.total {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.expenses {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.expense {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.expense:last-child {
+  border-bottom: 0;
+}
+
+.expense .desc {
+  flex: 1;
+  word-break: break-word;
+}
+
+.expense .amt {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  padding: 4px 0;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.icon {
+  padding: 2px 8px;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: #9ca3af;
+  background: transparent;
+}
+
+.icon:hover:not(:disabled) {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.expense-form {
+  flex-wrap: wrap;
+}
+
+.expense-form input[name="amount"] {
+  flex: 0 0 120px;
+}
+
+.expense-form button {
+  padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+.empty {
+  color: #6b7280;
+}
