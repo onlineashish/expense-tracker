@@ -145,3 +145,21 @@ button:disabled {
 .empty {
   color: #6b7280;
 }
+
+.expense--editing {
+  gap: 8px;
+}
+
+.expense--editing .desc-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  font: inherit;
+}
+
+.expense--editing .amt-input {
+  flex: 0 0 100px;
+  padding: 6px 10px;
+  font: inherit;
+  text-align: right;
+}

@@ -7,6 +7,7 @@ export default function PersonCard({
   onAddExpense,
   onDeleteExpense,
   onDelete,
+  onEditExpense,
 }) {
   return (
     <section className="card">
@@ -30,6 +31,7 @@ export default function PersonCard({
       <ExpenseList
         expenses={person.expenses}
         onDelete={(id) => onDeleteExpense(id)}
+        onEdit={onEditExpense}
       />
 
       <ExpenseForm onSubmit={(exp) => onAddExpense(person.id, exp)} />

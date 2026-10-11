@@ -1,4 +1,4 @@
-export const CURRENCY = ''; // e.g. '$', '₹', '€'
+export const CURRENCY = '₹'; // e.g. '$', '₹', '€'
 
 export function formatMoney(n) {
   return (

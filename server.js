@@ -119,6 +119,49 @@ app.delete('/api/expenses/:id', async (req, res, next) => {
   }
 });
 
+app.patch('/api/expenses/:id', async (req, res, next) => {
+  try {
+    const amount = req.body.amount !== undefined ? Number(req.body.amount) : undefined;
+    const description = req.body.description !== undefined ? String(req.body.description).trim() : undefined;
+
+    if (amount !== undefined && (!Number.isFinite(amount) || amount <= 0)) {
+      return res.status(400).json({ error: 'Amount must be a positive number' });
+    }
+    if (description !== undefined && !description) {
+      return res.status(400).json({ error: 'Description cannot be empty' });
+    }
+
+    const fields = [];
+    const values = [];
+    let idx = 1;
+
+    if (amount !== undefined) {
+      fields.push(`amount = $${idx++}`);
+      values.push(amount);
+    }
+    if (description !== undefined) {
+      fields.push(`description = $${idx++}`);
+      values.push(description);
+    }
+
+    if (fields.length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
+    values.push(req.params.id);
+    const { rowCount } = await pool.query(
+      `UPDATE expenses SET ${fields.join(', ')} WHERE id = $${idx}`,
+      values
+    );
+
+    if (!rowCount) return res.status(404).json({ error: 'Expense not found' });
+    res.status(204).end();  
+  }
+  catch (err) {
+    next(err);
+  }
+});
+
 /* ---------------- Errors ---------------- */
 
 app.use((err, req, res, next) => {

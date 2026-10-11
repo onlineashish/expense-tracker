@@ -30,4 +30,9 @@ export const api = {
     }),
   deleteExpense: (id) =>
     request(`/expenses/${id}`, { method: 'DELETE' }),
+  editExpense: (id, updatedExpense) =>
+    request(`/expenses/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updatedExpense),
+    }),
 };

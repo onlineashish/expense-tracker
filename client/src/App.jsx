@@ -47,6 +47,11 @@ export default function App() {
     await refresh();
   };
 
+  const handleEditExpense = async (expenseId, updatedExpense) => {
+    await api.editExpense(expenseId, updatedExpense);
+    await refresh();
+  };
+
   const grandTotal = people.reduce((sum, p) => sum + personTotal(p), 0);
 
   return (
@@ -73,6 +78,7 @@ export default function App() {
             onAddExpense={handleAddExpense}
             onDeleteExpense={handleDeleteExpense}
             onDelete={handleDeletePerson}
+            onEditExpense={handleEditExpense}
           />
         ))
       )}
