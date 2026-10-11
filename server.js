@@ -34,7 +34,7 @@ app.get('/api/people', async (req, res, next) => {
   try {
     const { rows } = await pool.query(`
       SELECT p.id, p.name,
-             e.id AS expense_id, e.amount, e.description
+             e.id AS expense_id, e.amount, e.description, e.created_at
       FROM people p
       LEFT JOIN expenses e ON e.person_id = p.id
       ORDER BY p.id ASC, e.id ASC
@@ -47,7 +47,8 @@ app.get('/api/people', async (req, res, next) => {
         byId.get(r.id).expenses.push({
           id: r.expense_id,
           amount: Number(r.amount),
-          description: r.description
+          description: r.description,
+          createdAt: r.created_at,
         });
       }
     }
@@ -99,7 +100,7 @@ app.post('/api/people/:id/expenses', async (req, res, next) => {
     const { rows } = await pool.query(
       `INSERT INTO expenses (person_id, amount, description)
        VALUES ($1, $2, $3)
-       RETURNING id, amount, description`,
+       RETURNING id, amount, description, created_at`,
       [req.params.id, amount, description]
     );
     res.status(201).json({ ...rows[0], amount: Number(rows[0].amount) });

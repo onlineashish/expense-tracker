@@ -163,3 +163,11 @@ button:disabled {
   font: inherit;
   text-align: right;
 }
+
+.expense .when {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

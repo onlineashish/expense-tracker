@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { formatMoney } from '../utils/money';
+import { useState } from "react";
+import { formatMoney } from "../utils/money";
+import { formatExpenseDate, formatExpenseFullDate } from "../utils/dates";
 
 export default function ExpenseRow({ expense, onEdit, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [draftAmount, setDraftAmount] = useState('');
-  const [draftDesc, setDraftDesc] = useState('');
+  const [draftAmount, setDraftAmount] = useState("");
+  const [draftDesc, setDraftDesc] = useState("");
   const [busy, setBusy] = useState(false);
 
   function startEditing() {
@@ -43,10 +44,10 @@ export default function ExpenseRow({ expense, onEdit, onDelete }) {
   }
 
   function handleKeyDown(e) {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       save();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       e.preventDefault();
       cancelEditing();
     }
@@ -56,6 +57,13 @@ export default function ExpenseRow({ expense, onEdit, onDelete }) {
     return (
       <li className="expense">
         <span className="desc">{expense.description}</span>
+        <time
+          className="when"
+          dateTime={expense.createdAt}
+          title={formatExpenseFullDate(expense.createdAt)}
+        >
+          {formatExpenseDate(expense.createdAt)}
+        </time>
         <span className="amt">{formatMoney(expense.amount)}</span>
         <button
           type="button"
