@@ -1,2 +1,2 @@
 # expense-tracker
-Learning
+Learning in WSL
