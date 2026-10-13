@@ -137,6 +137,16 @@ button:disabled {
   flex: 0 0 120px;
 }
 
+.description-input {
+flex: 2;
+min-width: 0;
+}
+
+.amount-input {
+flex: 1;
+min-width: 0;
+}
+
 .expense-form button {
   padding: 10px 14px;
   font-size: 0.9rem;

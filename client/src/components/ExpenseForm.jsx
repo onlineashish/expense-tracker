@@ -28,6 +28,15 @@ export default function ExpenseForm({ onSubmit }) {
   return (
     <form className="expense-form" onSubmit={handleSubmit} autoComplete="off">
       <input
+        className="description-input"
+        type="text"
+        placeholder="Description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        required
+      />
+      <input
+        className="amount-input"
         ref={amountRef}
         type="number"
         step="0.01"
@@ -36,13 +45,6 @@ export default function ExpenseForm({ onSubmit }) {
         placeholder="Amount"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
         required
       />
       <button type="submit" disabled={busy}>
