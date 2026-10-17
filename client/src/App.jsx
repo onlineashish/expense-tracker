@@ -1,11 +1,15 @@
+// client/src/App.jsx
 import { useEffect, useState, useCallback } from 'react';
 import { api } from './api';
+import { AuthProvider, useAuth } from './AuthContext';
+import AuthPage from './AuthPage';
 import PersonForm from './components/PersonForm';
 import PersonCard from './components/PersonCard';
 import { personTotal, formatMoney } from './utils/money';
 import './App.css';
 
-export default function App() {
+function MainApp() {
+  const { user, logout } = useAuth();
   const [people, setPeople] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,13 +46,13 @@ export default function App() {
     await refresh();
   };
 
-  const handleDeleteExpense = async (expenseId) => {
-    await api.deleteExpense(expenseId);
+  const handleEditExpense = async (expenseId, fields) => {
+    await api.updateExpense(expenseId, fields);
     await refresh();
   };
 
-  const handleEditExpense = async (expenseId, updatedExpense) => {
-    await api.editExpense(expenseId, updatedExpense);
+  const handleDeleteExpense = async (expenseId) => {
+    await api.deleteExpense(expenseId);
     await refresh();
   };
 
@@ -56,7 +60,15 @@ export default function App() {
 
   return (
     <div className="app">
-      <h1>💸 Expense Tracker</h1>
+      <header className="app-header">
+        <h1>💸 Expense Tracker</h1>
+        <div className="user-info">
+          <span>{user.email}</span>
+          <button type="button" className="logout-btn" onClick={logout}>
+            Logout
+          </button>
+        </div>
+      </header>
 
       <PersonForm onAdd={handleAddPerson} />
 
@@ -76,12 +88,28 @@ export default function App() {
             key={person.id}
             person={person}
             onAddExpense={handleAddExpense}
+            onEditExpense={handleEditExpense}
             onDeleteExpense={handleDeleteExpense}
             onDelete={handleDeletePerson}
-            onEditExpense={handleEditExpense}
           />
         ))
       )}
     </div>
+  );
+}
+
+function Gated() {
+  const { user, loading } = useAuth();
+
+  if (loading) return <p className="muted" style={{ padding: 24 }}>Loading…</p>;
+  if (!user) return <AuthPage />;
+  return <MainApp />;
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Gated />
+    </AuthProvider>
   );
 }
