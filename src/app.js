@@ -1,6 +1,7 @@
 // src/app.js
 import express from 'express';
 import session from 'express-session';
+import helmet from 'helmet';
 import connectPgSimple from 'connect-pg-simple';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,6 +14,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export function createApp() {
   const app = express();
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false, 
+}));
 
   app.use(express.json());
 
@@ -34,7 +48,7 @@ export function createApp() {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
         sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
+        secure: 'auto',
       },
     })
   );

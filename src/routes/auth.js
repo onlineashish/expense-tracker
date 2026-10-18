@@ -2,12 +2,13 @@
 import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import { pool } from '../db.js';
+import { loginLimiter, registerLimiter } from '../middleware/limiters.js';
 
 const router = Router();
 
 const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', 12);
 
-router.post('/register', async (req, res, next) => {
+router.post('/register', registerLimiter, async (req, res, next) => {
   try {
     const email = String(req.body.email ?? '').trim().toLowerCase();
     const password = String(req.body.password ?? '');
@@ -51,7 +52,7 @@ router.post('/register', async (req, res, next) => {
   }
 });
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', loginLimiter, async (req, res, next) => {
   try {
     const email = String(req.body.email ?? '').trim().toLowerCase();
     const password = String(req.body.password ?? '');
