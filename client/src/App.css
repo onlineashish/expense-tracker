@@ -267,3 +267,141 @@ min-width: 0;
 .logout-btn:hover:not(:disabled) {
   background: #d1d5db;
 }
+
+/* ---------- Mobile layout (max-width: 600px) ---------- */
+
+@media (max-width: 600px) {
+  body {
+    padding: 16px 12px 32px;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  /* App header: stack title above email + logout */
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .user-info {
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  /* Person form: stack input over button */
+  .app > form {
+    flex-direction: column;
+  }
+
+  .app > form input,
+  .app > form button {
+    width: 100%;
+  }
+
+  /* Card header: name on its own line, then total + delete */
+  .card header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .card header h2 {
+    flex: 1 1 100%;
+  }
+
+  .card header > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* Expense row: description full-width, then amount / time / buttons */
+  .expense {
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    padding: 10px 0;
+  }
+
+  .expense .desc {
+    flex: 1 1 100%;
+    order: 1;
+    margin-bottom: 4px;
+  }
+
+  .expense .amt {
+    order: 2;
+    font-size: 0.95rem;
+  }
+
+  .expense .when {
+    order: 3;
+    flex: 1;
+    text-align: right;
+  }
+
+  .expense .icon {
+    order: 4;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px;
+  }
+
+  /* Expense form: stack fields vertically */
+  .expense-form {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .expense-form .amount,
+  .expense-form input[name="amount"],
+  .expense-form input[name="description"] {
+    flex: 1 1 100%;
+  }
+
+  .expense-form button {
+    width: 100%;
+  }
+
+  /* Auth page: tighter vertical spacing */
+  .auth-page {
+    margin: 24px auto;
+  }
+
+  .auth-card {
+    padding: 20px;
+  }
+}
+
+/* ---------- Touch and input fixes (apply on all screens) ---------- */
+
+/* 16px prevents iOS Safari from zooming on input focus */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+/* 44px is Apple's minimum recommended tap target */
+button {
+  min-height: 44px;
+}
+
+/* Disable hover effects on touch devices (they stick otherwise) */
+@media (hover: none) {
+  button:hover:not(:disabled) {
+    background: #4f46e5;
+  }
+
+  .icon:hover {
+    color: #9ca3af;
+    background: transparent;
+  }
+
+  .logout-btn:hover:not(:disabled) {
+    background: #e5e7eb;
+  }
+}
